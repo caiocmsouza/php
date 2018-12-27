@@ -1,9 +1,5 @@
 <?php
 
-ini_set('display_errors',1);
-error_reporting(E_ALL);
-header('Content-Type: text/html; charset=utf-8');
-
 
 require_once "Entity/ContaCorrente.php";
 
@@ -11,6 +7,19 @@ require_once "Entity/ContaCorrente.php";
 $contaCorrenteJoao = new ContaCorrente("João Lucas","5199","16321-2", 500.50);
 
 $contaCorrenteJose = new ContaCorrente("Jose da silva","5199","122221-2", 900.50);
+
+$saldoJoão = $contaCorrenteJoao->getSaldo();
+
+$saldoJose = $contaCorrenteJose->getSaldo();
+
+print_r($saldoJoao);
+
+print_r($saldoJose);
+
+
+
+
+
 
 
 echo "Inicio da conta dos correntistas joao e jose<br />";
