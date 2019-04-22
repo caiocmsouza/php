@@ -11,6 +11,14 @@ class ContaCorrente{
 	
 	private $saldo;
 
+	public static $totalDeContas;
+
+	public static $taxaOperacao;
+
+	
+
+
+	
 	public function __construct($titular,$agencia,$numero,$saldo){
 
 		$this->titular = $titular;
@@ -18,6 +26,20 @@ class ContaCorrente{
 		$this->numero = $numero;
 		$this->saldo = $saldo;
 
+		try{
+			self::$taxaOperacao = intDiv(30,self::$totalDeContas);
+	
+		}catch(Error $erro){
+
+			echo "Não é possivel realizar divisão por zero";
+			exit;				
+
+		}
+
+		
+		self::$totalDeContas ++;
+
+		
 	}
 
 
@@ -41,8 +63,12 @@ class ContaCorrente{
 
 	public function transferir($valor, ContaCorrente $contaCorrente){
 
-		Validacao::verificaNumerico($valor);
+		if(!is_numeric($valor)){
 
+			echo "o valore passado nao é numero";
+			exit;
+
+		}
 		$this->sacar($valor);
 
 		$contaCorrente->depositar($valor);
