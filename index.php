@@ -4,12 +4,12 @@
  error_reporting(E_ALL);
  header('Content-Type: text/html; charset=utf-8');
 
+include "autoload.php";
+use Validacao;
+use ContaCorrente;
 
 
-require "Validacao.php";
-require "ContaCorrente.php";
-
-
+echo "<pre>";
 
 
 $contaJoao = new ContaCorrente("Joao","1212","343477-9",2000.00);
@@ -18,22 +18,23 @@ $contaMaria = new ContaCorrente("Maria","1212","343423-9",6000.00);
 
 $contaJose = new ContaCorrente("Jose","1212","343423-9",6000.00);
 
+$contaFernanda = new ContaCorrente("Fernanda","1212","1343423-9",6000.00);
+
+$contaBernardo = new ContaCorrente("Bernardo","1212","2343423-9",6000.00);
+
+$contaFelipe = new ContaCorrente("Felipe","1212","3343423-9",6000.00);
+
+$contaLucas = new ContaCorrente("Lucas","1212","4343423-9",6000.00);
 
 
-echo ContaCorrente::$totalDeContas;
+echo "<br>";
+echo "total de contas:". ContaCorrente::$totalDeContas;
 
 echo "<br>";
 
-echo ContaCorrente::$taxaOperacao;
+echo "taxa: ".ContaCorrente::$taxaOperacao;
 
-
-
-
-
-
-
-
-
+echo "<br>";
 
 
 
@@ -43,41 +44,44 @@ echo "<h1>Contas Correntes</h1>";
 
 echo "<h2>Conta Corrente: Titular: ".$contaJoao->getTitular()."</h2>";
 var_dump($contaJoao);
+echo "<br>";
 
-// echo "<h3>apos um saque de R$ 20</h3>";
-// $contaJoao->sacar(20);
 
-// var_dump($contaJoao);
+	
 
-// echo "<h3>apos um depósito R$ 20</h3>";
-// $contaJoao->depositar(20);
+try{
+	$contaJoao->transferir(300000,$contaMaria);
+	
+	
 
-// var_dump($contaJoao);
+}catch(\InvalidArgumentException $erro){
+	echo $erro->getMessage();
 
-echo "<h3>apos uma Transferencia R$ 20</h3>";
-$contaJoao->transferir('2323232',$contaMaria);
 
+}catch(\exception\SaldoInsuficienteException $erro){
+	echo $erro->getMessage()." <b>Saldo em conta: ". $erro->saldo." Valor do saque: ".$erro->valor."</b>";
+
+
+	$contaJoao->totalSaquesNaoPermitidos ++;
+
+
+}catch(\Exception $erro){
+	
+	//var_dump($erro->getPrevious());
+
+	echo $erro->getPrevious()->getTraceAsString();
+	//echo "<b>".$erro->getPrevious()->getMessage()."</b>;
+	//echo $erro->getMessage();
+
+}
+
+echo "<br>";
+
+echo "Operações não realizadas: ".ContaCorrente::$operacaoNaoRealizada;
+echo "<br>";
  var_dump($contaJoao);
 
-
-// echo "<h2>Conta Corrente: Titular: ".$contaMaria->getTitular()."</h2>";
-// var_dump($contaMaria);
-
-// echo "<h3>apos um saque de R$ 20</h3>";
-// $contaMaria->sacar(20);
-
-// var_dump($contaMaria);
-
-// echo "<h3>apos um depósito R$ 20</h3>";
-// $contaMaria->depositar(20);
-
-// var_dump($contaMaria);
-
-// echo "<h3>apos uma Transferencia R$ 20</h3>";
-// $contaMaria->transferir(20,$contaJoao);
-
-// var_dump($contaMaria);
-
+	
 
 
 

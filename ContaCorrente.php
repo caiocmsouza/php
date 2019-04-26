@@ -1,6 +1,9 @@
 <?php
 
 
+use exception\SaldoInsuficienteException;
+
+
 class ContaCorrente{
 
 	private $titular;
@@ -15,6 +18,11 @@ class ContaCorrente{
 
 	public static $taxaOperacao;
 
+	public $totalSaquesNaoPermitidos;
+	
+	public static $operacaoNaoRealizada;
+
+
 	
 
 
@@ -26,19 +34,32 @@ class ContaCorrente{
 		$this->numero = $numero;
 		$this->saldo = $saldo;
 
-		try{
-			self::$taxaOperacao = intDiv(30,self::$totalDeContas);
-	
-		}catch(Error $erro){
 
-			echo "Não é possivel realizar divisão por zero";
-			exit;				
+		self::$totalDeContas ++;
+
+		
+		try{
+
+			if(self::$totalDeContas < 1){
+				throw new Exception("Valor inferior a zero!");
+				
+			}
+			self::$taxaOperacao = (30/self::$totalDeContas);
+	
+		}catch(Exception $erro){
+
+			echo $erro->getMessage();
+
+			exit;
+
 
 		}
 
 		
-		self::$totalDeContas ++;
 
+
+		
+		
 		
 	}
 
@@ -63,17 +84,40 @@ class ContaCorrente{
 
 	public function transferir($valor, ContaCorrente $contaCorrente){
 
-		if(!is_numeric($valor)){
+			try{
 
-			echo "o valore passado nao é numero";
-			exit;
+				$arquivo = new LeitorArquivo("logTransferencia.txt");
 
-		}
-		$this->sacar($valor);
+				$arquivo->abrirArquivo();
+				$arquivo->escreverNoArquivo();
 
-		$contaCorrente->depositar($valor);
+				Validacao::verificaNumerico($valor);
 
-		return $this;
+				Validacao::verificaValorNegativo($valor);
+
+				$this->sacar($valor);
+
+			    $contaCorrente->depositar($valor);
+
+			    $arquivo->fecharArquivo();
+
+
+				return $this;
+					
+			}catch(\Exception $e){
+			    
+				ContaCorrente::$operacaoNaoRealizada ++;
+				throw new exception\OperacaoNaoRealizadaException("Operação não realizada", 55,$e);
+			}finally{
+
+				echo "Finally";
+				$arquivo->fecharArquivo();
+
+
+			}
+				
+		
+		
 
 	}
 
@@ -83,20 +127,34 @@ class ContaCorrente{
 
 	public function sacar($valor){
 
+		
 		Validacao::verificaNumerico($valor);
+		Validacao::verificaValorNegativo($valor);
+
+		if($valor > $this->saldo){
+			throw new SaldoInsuficienteException("saldo insuficiente",$valor,$this->saldo);
+			
+		}
 
 		$this->saldo = $this->saldo - $valor;
 		return $this;
+				
+		
 
 	}
 	
 	public function depositar($valor){
 		
+		
 		Validacao::verificaNumerico($valor);
+
+		Validacao::verificaValorNegativo($valor);
 
 		$this->saldo = $this->saldo + $valor;
 		return $this;
-
+	
+		
+		
 	}
 
 	

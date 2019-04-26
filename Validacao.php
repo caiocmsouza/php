@@ -16,10 +16,30 @@ class Validacao{
 	public static function verificaNumerico($valor){
 
 		if(!is_numeric($valor)){
-			throw new Exception("o Tipo passado nao é um numero valido");
+			throw new InvalidArgumentException("o Tipo passado nao é um numero valido");
 			
 		}
 	}
+
+
+	public static function verificaValorNegativo($valor){
+
+
+		if($valor < 0){
+			throw new Exception("O valor não é permitido");
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
